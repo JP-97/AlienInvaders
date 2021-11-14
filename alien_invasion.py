@@ -20,7 +20,7 @@ class AlienInvasion:
         self.screen = pygame.display.set_mode((self.settings.screen_width,self.settings.screen_height))
         pygame.display.set_caption("Alien Invasion")
         self.ship = Ship(self) #instantiate ship object
-        self.bullet = Bullet(self) #instantiate bullet object
+        self.bullets = pygame.sprite.Group() #instantiate bullet group to manage all fired bullets
 
     def run_game(self):
         """
@@ -46,27 +46,30 @@ class AlienInvasion:
                 if event.key == pygame.K_RIGHT and ((self.ship.rect.bottomright[0] + self.ship.speed) < self.ship.screen_rect.bottomright[0]): #conditional statement here just ensures that the ship can't go off the screen
                     self.ship.rect.x += self.ship.speed
 
-                if event.key == pygame.K_LEFT and ((self.ship.rect.bottomleft[0] - self.ship.speed) > self.ship.screen_rect.bottomleft[0]):
+                elif event.key == pygame.K_LEFT and ((self.ship.rect.bottomleft[0] - self.ship.speed) > self.ship.screen_rect.bottomleft[0]):
                     self.ship.rect.x -= self.ship.speed
 
-                if event.key == pygame.K_q: #enables quitting the game when pressing 'q'
+                elif event.key == pygame.K_q: #enables quitting the game when pressing 'q'
                     sys.exit()
 
-                if event.key == pygame.K_SPACE and not(self.bullet.fired): #check to see if the bullet has already been fired or not
-                    self.bullet.fired = True
-
+                elif event.key == pygame.K_SPACE:
+                    self.bullets.add(Bullet(self)) #add a new bullet object to the active bullets group each time the spacebar is pressed
 
     def _update_screen(self):
         """
         Helper method which updates the screen
         :return: None
         """
+        #Add background color and draw ship
         self.screen.fill(self.settings.bg_color)
         self.ship.blitme()
 
-        #Update the bullet
-        self.bullet.is_fired()
-        self.bullet.blitme()
+        #Update all bullet positions in bullets group
+        self.bullets.update()
+
+        #Draw all the bullets to the screen
+        for bullet in self.bullets.sprites():
+            bullet.blitme()
 
         #Update the entire screen
         pygame.display.flip()

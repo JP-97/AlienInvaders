@@ -1,33 +1,30 @@
 import pygame
+from pygame.sprite import Sprite
 
-class Bullet():
+class Bullet(Sprite): #need to inherit from Sprite so that we can leverage pygame.sprite.Group() class functionalities
     def __init__(self, ai_game):
+        super().__init__() #inherit the properties of the sprite class
 
         self.ai_game = ai_game
         self.ship_rect = ai_game.ship.rect
         self.rect = pygame.Rect(self.ship_rect.midtop, (ai_game.settings.bullet_width, ai_game.settings.bullet_height))
-        self.fired = False
 
     def blitme(self):
         """
         Draws a bullet on the AI screen
-        :return:
+        :return: None
         """
         pygame.draw.rect(self.ai_game.screen, self.ai_game.settings.bullet_color, self.rect)
 
-    def is_fired(self):
+    def update(self):
         """
+        Overrides the pygame.sprite.Group.update() method and applied update to all sprites in the bullets group
+
         Checks to see if the user fired the bullet. If so, updates the bullet's rect location accordingly
         :return: None
         """
-        if self.fired:
-            self.rect.y -= 5
-            print("Firing bullet")
+        self.rect.y -= self.ai_game.settings.bullet_speed
 
-        #reset the bullet once it has reached the top of the screen or if it has not been fired
-        if self.rect.top <= 0 or not(self.fired):
-            self.reset_rect()
-            self.fired = False
 
     def reset_rect(self):
         """
