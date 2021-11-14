@@ -21,3 +21,16 @@ class Ship:
         """
 
         self.screen.blit(self.image, self.rect)
+
+    def update_pos(self, direction):
+        """
+        Used to check position of ships rectangle prior to updating to ensure that new rectangle position is valid
+        :param direction: 'Right' to move the ship right, 'Left' to move the ship left
+        :return: None
+        """
+
+        if direction == 'Right' and ((self.rect.bottomright[0] + self.speed) < self.screen_rect.bottomright[0]): #ensure that the ship will not move off the screen
+            self.rect.x += self.speed
+
+        elif direction == 'Left' and ((self.rect.bottomleft[0] - self.speed) > self.screen_rect.bottomleft[0]):
+            self.rect.x -= self.speed

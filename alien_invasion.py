@@ -46,29 +46,26 @@ class AlienInvasion:
                 active_keys = pygame.key.get_pressed() #returns a list of all the actively pressed keys
 
                 ####    Simultaneous Presses    ####
-                if active_keys[pygame.K_RIGHT] and active_keys[pygame.K_SPACE] and (self.ship.rect.bottomright[0] + self.ship.speed) < self.ship.screen_rect.bottomright[0]:
+                if active_keys[pygame.K_RIGHT] and active_keys[pygame.K_SPACE]:
                     self.bullets.add(Bullet(self))
-                    self.ship.rect.x += self.ship.speed
+                    self.ship.update_pos('Right')
 
-                elif active_keys[pygame.K_LEFT] and active_keys[pygame.K_SPACE] and ((self.ship.rect.bottomleft[0] - self.ship.speed) > self.ship.screen_rect.bottomleft[0]):
+                elif active_keys[pygame.K_LEFT] and active_keys[pygame.K_SPACE]:
                     self.bullets.add(Bullet(self))
-                    self.ship.rect.x -= self.ship.speed
+                    self.ship.update_pos('Left')
 
                 ####    Individual Presses  ####
                 elif event.key == pygame.K_q: #enables quitting the game when pressing 'q'
                     sys.exit()
 
-                elif event.key == pygame.K_RIGHT and ((self.ship.rect.bottomright[0] + self.ship.speed) < self.ship.screen_rect.bottomright[0]): #conditional statement here just ensures that the ship can't go off the screen
-                    self.ship.rect.x += self.ship.speed
+                elif event.key == pygame.K_RIGHT:
+                    self.ship.update_pos('Right')
 
-                elif event.key == pygame.K_LEFT and ((self.ship.rect.bottomleft[0] - self.ship.speed) > self.ship.screen_rect.bottomleft[0]):
-                    self.ship.rect.x -= self.ship.speed
+                elif event.key == pygame.K_LEFT:
+                    self.ship.update_pos('Left')
 
                 elif event.key == pygame.K_SPACE:
                     self.bullets.add(Bullet(self)) #add a new bullet object to the active bullets group each time the spacebar is pressed
-
-
-
 
     def _update_screen(self):
         """
