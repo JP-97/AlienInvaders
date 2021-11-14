@@ -43,17 +43,32 @@ class AlienInvasion:
                 sys.exit()
 
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT and ((self.ship.rect.bottomright[0] + self.ship.speed) < self.ship.screen_rect.bottomright[0]): #conditional statement here just ensures that the ship can't go off the screen
+                active_keys = pygame.key.get_pressed() #returns a list of all the actively pressed keys
+
+                ####    Simultaneous Presses    ####
+                if active_keys[pygame.K_RIGHT] and active_keys[pygame.K_SPACE] and (self.ship.rect.bottomright[0] + self.ship.speed) < self.ship.screen_rect.bottomright[0]:
+                    self.bullets.add(Bullet(self))
+                    self.ship.rect.x += self.ship.speed
+
+                elif active_keys[pygame.K_LEFT] and active_keys[pygame.K_SPACE] and ((self.ship.rect.bottomleft[0] - self.ship.speed) > self.ship.screen_rect.bottomleft[0]):
+                    self.bullets.add(Bullet(self))
+                    self.ship.rect.x -= self.ship.speed
+
+                ####    Individual Presses  ####
+                elif event.key == pygame.K_q: #enables quitting the game when pressing 'q'
+                    sys.exit()
+
+                elif event.key == pygame.K_RIGHT and ((self.ship.rect.bottomright[0] + self.ship.speed) < self.ship.screen_rect.bottomright[0]): #conditional statement here just ensures that the ship can't go off the screen
                     self.ship.rect.x += self.ship.speed
 
                 elif event.key == pygame.K_LEFT and ((self.ship.rect.bottomleft[0] - self.ship.speed) > self.ship.screen_rect.bottomleft[0]):
                     self.ship.rect.x -= self.ship.speed
 
-                elif event.key == pygame.K_q: #enables quitting the game when pressing 'q'
-                    sys.exit()
-
                 elif event.key == pygame.K_SPACE:
                     self.bullets.add(Bullet(self)) #add a new bullet object to the active bullets group each time the spacebar is pressed
+
+
+
 
     def _update_screen(self):
         """
