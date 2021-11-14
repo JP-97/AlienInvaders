@@ -52,6 +52,9 @@ class AlienInvasion:
                 if event.key == pygame.K_q: #enables quitting the game when pressing 'q'
                     sys.exit()
 
+                if event.key == pygame.K_SPACE and not(self.bullet.fired): #check to see if the bullet has already been fired or not
+                    self.bullet.fired = True
+
 
     def _update_screen(self):
         """
@@ -60,7 +63,12 @@ class AlienInvasion:
         """
         self.screen.fill(self.settings.bg_color)
         self.ship.blitme()
+
+        #Update the bullet
+        self.bullet.is_fired()
         self.bullet.blitme()
+
+        #Update the entire screen
         pygame.display.flip()
 
 if __name__ == "__main__":
