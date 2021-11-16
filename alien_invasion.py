@@ -8,6 +8,7 @@ import pygame
 from settings import Settings
 from Ship import Ship
 from bullet import Bullet
+from Alien import Alien
 
 class AlienInvasion:
     """
@@ -21,6 +22,8 @@ class AlienInvasion:
         pygame.display.set_caption("Alien Invasion")
         self.ship = Ship(self) #instantiate ship object
         self.bullets = pygame.sprite.Group() #instantiate bullet group to manage all fired bullets
+
+        self.alien = Alien(self)
 
     def run_game(self):
         """
@@ -76,15 +79,33 @@ class AlienInvasion:
         self.screen.fill(self.settings.bg_color)
         self.ship.blitme()
 
-        #Update all bullet positions in bullets group
-        self.bullets.update()
+        self._update_bullets()
 
-        #Draw all the bullets to the screen
-        for bullet in self.bullets.sprites():
-            bullet.blitme()
+        self.alien.blitme()
 
         #Update the entire screen
         pygame.display.flip()
+
+    def _update_bullets(self):
+        """
+        Take care of the bullet updates required in the _update_screen loop
+        :return: None
+        """
+        # Update all bullet positions in bullets group. Automatically gets applied
+        # to all sprites in the group
+        self.bullets.update()
+
+        # Draw all the bullets to the screen
+        for bullet in self.bullets.sprites():
+            bullet.blitme()
+
+        # delete bullets off the screen to preserve memory. Need to use a copy of the bullets
+        # group since you shouldn't modify a list size while iterating.
+        for bullet in self.bullets.copy():
+            if bullet.rect.y <= 0:
+                bullet.remove(self.bullets)
+
+### Create the main game loop ###
 
 if __name__ == "__main__":
     ai = AlienInvasion()
