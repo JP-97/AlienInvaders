@@ -21,9 +21,12 @@ class AlienInvasion:
         self.screen = pygame.display.set_mode((self.settings.screen_width,self.settings.screen_height))
         pygame.display.set_caption("Alien Invasion")
         self.ship = Ship(self) #instantiate ship object
-        self.bullets = pygame.sprite.Group() #instantiate bullet group to manage all fired bullets
+        self.aliens_full = False  # will be used to indicate when the screen is full of aliens
 
-        self.alien = Alien(self)
+        #instantiate groups for aliens and bullets
+        self.bullets = pygame.sprite.Group()
+        self.aliens = pygame.sprite.Group()
+        self._create_fleet()
 
     def run_game(self):
         """
@@ -70,6 +73,20 @@ class AlienInvasion:
                 elif event.key == pygame.K_SPACE:
                     self.bullets.add(Bullet(self)) #add a new bullet object to the active bullets group each time the spacebar is pressed
 
+    def _create_fleet(self):
+        alien = Alien(self)
+        available_space_x = self.settings.screen_width
+        alien_width = alien.rect.width
+        alien_height = alien.rect.height
+        number_of_aliens = available_space_x//(2*alien_width) #floor division of screen by alien width to allow for margin
+
+        for row in range(1, 5):
+            for alien_number in range(number_of_aliens):
+                alien = Alien(self)
+                alien.rect.left = alien_number * 2 * alien_width
+                alien.rect.top = row * 2 * alien_height
+                self.aliens.add(alien)
+
     def _update_screen(self):
         """
         Helper method which updates the screen
@@ -80,8 +97,7 @@ class AlienInvasion:
         self.ship.blitme()
 
         self._update_bullets()
-
-        self.alien.blitme()
+        self.aliens.draw(self.screen)
 
         #Update the entire screen
         pygame.display.flip()
@@ -104,6 +120,7 @@ class AlienInvasion:
         for bullet in self.bullets.copy():
             if bullet.rect.y <= 0:
                 bullet.remove(self.bullets)
+
 
 ### Create the main game loop ###
 
