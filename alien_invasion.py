@@ -9,6 +9,7 @@ from settings import Settings
 from Ship import Ship
 from bullet import Bullet
 from Alien import Alien
+import time
 
 class AlienInvasion:
     """
@@ -21,11 +22,13 @@ class AlienInvasion:
         self.screen = pygame.display.set_mode((self.settings.screen_width,self.settings.screen_height))
         pygame.display.set_caption("Alien Invasion")
         self.ship = Ship(self) #instantiate ship object
-        self.aliens_full = False  # will be used to indicate when the screen is full of aliens
 
         #instantiate groups for aliens and bullets
         self.bullets = pygame.sprite.Group()
+
+        #create aliens and draw the initial fleet
         self.aliens = pygame.sprite.Group()
+        # self.direction = "Right"
         self._create_fleet()
 
     def run_game(self):
@@ -74,6 +77,10 @@ class AlienInvasion:
                     self.bullets.add(Bullet(self)) #add a new bullet object to the active bullets group each time the spacebar is pressed
 
     def _create_fleet(self):
+        """
+        Helper function used to draw the initial fleet
+        :return: None
+        """
         alien = Alien(self)
         available_space_x = self.settings.screen_width
         alien_width = alien.rect.width
@@ -87,6 +94,47 @@ class AlienInvasion:
                 alien.rect.top = row * 2 * alien_height
                 self.aliens.add(alien)
 
+    def _move_fleet(self):
+        """
+        Move the fleet of aliens to the right until it hits the edge of the screen, then down, then to the left until:
+        1. All the aliens have been shot down
+        2. An alien collides with the ship
+        3. An alien reaches the bottom of the screen
+        :return: None
+        """
+
+        #find the rightmost alien in the group to use as reference for when the fleet hits the right side of the screen
+        rightmost_alien = 0
+        bottom_alien = 0
+        leftmost_alien = 1200
+
+        for alien in self.aliens:
+            if alien.rect.right > rightmost_alien:
+                rightmost_alien = alien.rect.right
+
+            if alien.rect.bottom > bottom_alien:
+                bottom_alien = alien.rect.bottom
+
+            if alien.rect.left < leftmost_alien:
+                leftmost_alien = alien.rect.left
+
+        if self.settings.direction == 1:
+            if rightmost_alien + 15 < self.settings.screen_width:
+                self.aliens.update("Right")
+
+            else:
+                self.settings.direction = -1
+                self.aliens.update("Down")
+
+        elif self.settings.direction == -1:
+            if leftmost_alien - 15 > 0:
+                self.aliens.update("Left")
+
+            else:
+                self.aliens.update("Down")
+                self.settings.direction = 1
+
+
     def _update_screen(self):
         """
         Helper method which updates the screen
@@ -98,6 +146,7 @@ class AlienInvasion:
 
         self._update_bullets()
         self.aliens.draw(self.screen)
+        self._move_fleet()
 
         #Update the entire screen
         pygame.display.flip()
