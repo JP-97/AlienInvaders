@@ -85,7 +85,7 @@ class AlienInvasion:
         available_space_x = self.settings.screen_width
         alien_width = alien.rect.width
         alien_height = alien.rect.height
-        number_of_aliens = available_space_x//(2*alien_width) #floor division of screen by alien width to allow for margin
+        number_of_aliens = available_space_x//(4*alien_width) #floor division of screen by alien width to allow for margin
 
         for row in range(1, 5):
             for alien_number in range(number_of_aliens):
@@ -145,6 +145,7 @@ class AlienInvasion:
         self.ship.blitme()
 
         self._update_bullets()
+        self._have_collided()
         self.aliens.draw(self.screen)
         self._move_fleet()
 
@@ -169,6 +170,10 @@ class AlienInvasion:
         for bullet in self.bullets.copy():
             if bullet.rect.y <= 0:
                 bullet.remove(self.bullets)
+
+    def _have_collided(self):
+        collided_sprites = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+
 
 
 ### Create the main game loop ###

@@ -10,8 +10,11 @@ class Settings:
 
         #bullet settings
         self.bullet_color = (0,0,0)
-        self.bullet_speed = 2
+        self.bullet_speed = 1
         self.bullet_width = 3
         self.bullet_height = 15
 
-        self.direction = 1 #Right is 1, left is -1
+        #alien settings
+        self.direction = 1
+        self.alien_speed_left_to_right = 1
+        self.alien_drop_speed = 10
