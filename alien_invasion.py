@@ -11,6 +11,7 @@ from bullet import Bullet
 from Alien import Alien
 import time
 
+
 class AlienInvasion:
     """
     Overall class to manage game assets and behaviour
@@ -56,11 +57,11 @@ class AlienInvasion:
 
                 ####    Simultaneous Presses    ####
                 if active_keys[pygame.K_RIGHT] and active_keys[pygame.K_SPACE]:
-                    self.bullets.add(Bullet(self))
+                    self._fire_bullet()
                     self.ship.update_pos('Right')
 
                 elif active_keys[pygame.K_LEFT] and active_keys[pygame.K_SPACE]:
-                    self.bullets.add(Bullet(self))
+                    self._fire_bullet()
                     self.ship.update_pos('Left')
 
                 ####    Individual Presses  ####
@@ -74,7 +75,7 @@ class AlienInvasion:
                     self.ship.update_pos('Left')
 
                 elif event.key == pygame.K_SPACE:
-                    self.bullets.add(Bullet(self)) #add a new bullet object to the active bullets group each time the spacebar is pressed
+                    self._fire_bullet() #add a new bullet object to the active bullets group each time the spacebar is pressed
 
     def _create_fleet(self):
         """
@@ -93,6 +94,15 @@ class AlienInvasion:
                 alien.rect.left = alien_number * 2 * alien_width
                 alien.rect.top = row * 2 * alien_height
                 self.aliens.add(alien)
+
+    def _fire_bullet(self):
+        """
+        Helper method which checks to ensure that no two bullets are fired in too close of a succession
+        :return: None
+        """
+        if time.time() - self.settings.bullet_timer > self.settings.bullet_fired_threshold:
+            self.bullets.add(Bullet(self))
+            self.settings.bullet_timer = time.time()  # reset the bullet timer
 
     def _move_fleet(self):
         """

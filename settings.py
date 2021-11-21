@@ -1,3 +1,5 @@
+import time
+
 class Settings:
     """
     This class will hold all of the relevant settings for the game instance
@@ -13,6 +15,8 @@ class Settings:
         self.bullet_speed = 1
         self.bullet_width = 3
         self.bullet_height = 15
+        self.bullet_timer = time.time()
+        self.bullet_fired_threshold = 0.25
 
         #alien settings
         self.direction = 1
