@@ -1,10 +1,5 @@
 import pygame
 
-#Here we should be able to create an agnostic class for "screen" objects and then create two sub-classes
-#one for end_screen and one for scoreboard, since both will be Font() objects overlapping
-#the main screen
-
-
 class Screen:
     def __init__(self):
         self.font = None

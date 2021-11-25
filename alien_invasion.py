@@ -33,6 +33,12 @@ class AlienInvasion:
         self._create_fleet()
         self.end_screen = Screen()
 
+        #initialize scoreboard
+        self.score = 0
+        self.scoreboard = Screen()
+        self.scoreboard_surface = self.scoreboard.create_screen(str(self.score),size = 50, color=(0,0,0))
+        self.scoreboard.rect = (1100,10)
+
 
     def run_game(self):
         """
@@ -161,6 +167,10 @@ class AlienInvasion:
         self.aliens.draw(self.screen)
         self._move_fleet()
 
+        #update the score
+        self.scoreboard_surface = self.scoreboard.create_screen(str(self.score), size = 50, color=(0, 0, 0))
+        self.screen.blit(self.scoreboard_surface, self.scoreboard.rect)
+
         #Update the entire screen
         pygame.display.flip()
 
@@ -194,16 +204,35 @@ class AlienInvasion:
         collided_aliens_and_bullets = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
         collided_aliens_and_ship = pygame.sprite.spritecollide(self.ship,self.aliens, False)
 
-        #Logic to exit the game if a ship collides with an alien
         if collided_aliens_and_ship:
-            self.settings.bg_color = (0,0,0)
-            self.screen.fill(self.settings.bg_color)
-            self.end_screen_surface = self.end_screen.create_screen("Game Over")
-            self.end_screen.rect = self.screen.get_rect().center
-            self.screen.blit(self.end_screen_surface, self.end_screen.rect)
-            pygame.display.flip()
-            time.sleep(25)
-            sys.exit()
+            self._draw_end_screen()
+
+        #10 points for each alien shot down
+        if collided_aliens_and_bullets:
+            self.score += 10
+            # print(len(collided_aliens_and_bullets))
+            print(self.score)
+
+
+    def _draw_end_screen(self):
+        """
+        Logic required to apply a black background and print the scoreboard to the screen
+        :return:
+        """
+        self.settings.bg_color = (0, 0, 0)
+        self.screen.fill(self.settings.bg_color)
+        self.end_screen_surface = self.end_screen.create_screen("Game Over", size = 75)
+        self.scoreboard_surface = self.scoreboard.create_screen(f"Your final score was : {str(self.score)}", size=50, color=(255,255,255))
+        self.end_screen.rect = self.screen.get_rect().center
+        self.scoreboard.rect = (600, 550)
+        self.screen.blit(self.end_screen_surface, self.end_screen.rect)
+        self.screen.blit(self.scoreboard_surface, self.scoreboard.rect)
+
+
+        #Note: We need to update the screen within this helper function so that we can exit
+        pygame.display.flip()
+        time.sleep(25)
+        sys.exit()
 
 ### Create the main game loop ###
 
