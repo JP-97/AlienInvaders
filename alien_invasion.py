@@ -10,6 +10,7 @@ from Ship import Ship
 from bullet import Bullet
 from Alien import Alien
 import time
+from Screen import Screen
 
 
 class AlienInvasion:
@@ -29,8 +30,9 @@ class AlienInvasion:
 
         #create aliens and draw the initial fleet
         self.aliens = pygame.sprite.Group()
-        # self.direction = "Right"
         self._create_fleet()
+        self.end_screen = Screen()
+
 
     def run_game(self):
         """
@@ -182,9 +184,26 @@ class AlienInvasion:
                 bullet.remove(self.bullets)
 
     def _have_collided(self):
-        collided_sprites = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+        """
+        Helper method to detect collisions between:
+        1. Bullets fired from ship and aliens
+        2. Ship and aliens
+        3. Alien bullets and ship (coming soon)
+        :return: None
+        """
+        collided_aliens_and_bullets = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+        collided_aliens_and_ship = pygame.sprite.spritecollide(self.ship,self.aliens, False)
 
-
+        #Logic to exit the game if a ship collides with an alien
+        if collided_aliens_and_ship:
+            self.settings.bg_color = (0,0,0)
+            self.screen.fill(self.settings.bg_color)
+            self.end_screen_surface = self.end_screen.create_screen("Game Over")
+            self.end_screen.rect = self.screen.get_rect().center
+            self.screen.blit(self.end_screen_surface, self.end_screen.rect)
+            pygame.display.flip()
+            time.sleep(25)
+            sys.exit()
 
 ### Create the main game loop ###
 
