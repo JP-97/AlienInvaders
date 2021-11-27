@@ -11,6 +11,7 @@ from bullet import Bullet
 from Alien import Alien
 import time
 from Screen import Screen
+from bullet import AlienBullet
 
 
 class AlienInvasion:
@@ -32,6 +33,7 @@ class AlienInvasion:
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
         self.end_screen = Screen()
+        self.alien_bullets = pygame.sprite.Group()
 
         #initialize scoreboard
         self.score = 0
@@ -108,6 +110,8 @@ class AlienInvasion:
         Helper method which checks to ensure that no two bullets are fired in too close of a succession
         :return: None
         """
+
+        #ship bullets
         if time.time() - self.settings.bullet_timer > self.settings.bullet_fired_threshold:
             self.bullets.add(Bullet(self))
             self.settings.bullet_timer = time.time()  # reset the bullet timer
@@ -152,27 +156,10 @@ class AlienInvasion:
                 self.aliens.update("Down")
                 self.settings.direction = 1
 
-
-    def _update_screen(self):
-        """
-        Helper method which updates the screen
-        :return: None
-        """
-        #Add background color and draw ship
-        self.screen.fill(self.settings.bg_color)
-        self.ship.blitme()
-
-        self._update_bullets()
-        self._have_collided()
-        self.aliens.draw(self.screen)
-        self._move_fleet()
-
-        #update the score
-        self.scoreboard_surface = self.scoreboard.create_screen(str(self.score), size = 50, color=(0, 0, 0))
-        self.screen.blit(self.scoreboard_surface, self.scoreboard.rect)
-
-        #Update the entire screen
-        pygame.display.flip()
+        # Add alien bullets if time conditions are met
+        if time.time() - self.settings.bullet_timer_alien > self.settings.bullet_fired_threshold_alien:
+            self.alien_bullets.add(AlienBullet(self))
+            self.settings.bullet_timer_alien = time.time() #reset the timer
 
     def _update_bullets(self):
         """
@@ -191,6 +178,21 @@ class AlienInvasion:
         # group since you shouldn't modify a list size while iterating.
         for bullet in self.bullets.copy():
             if bullet.rect.y <= 0:
+                bullet.remove(self.bullets)
+
+    def _update_alien_bullets(self):
+        """
+        Update the bullets fired from the alien ships
+        :return: None
+        """
+
+        self.alien_bullets.update(direction = -1)
+
+        for bullet in self.alien_bullets.sprites():
+            bullet.blitme_alien()
+
+        for bullet in self.alien_bullets.copy():
+            if bullet.rect.y >= 1200:
                 bullet.remove(self.bullets)
 
     def _have_collided(self):
@@ -213,7 +215,6 @@ class AlienInvasion:
             # print(len(collided_aliens_and_bullets))
             print(self.score)
 
-
     def _draw_end_screen(self):
         """
         Logic required to apply a black background and print the scoreboard to the screen
@@ -223,16 +224,36 @@ class AlienInvasion:
         self.screen.fill(self.settings.bg_color)
         self.end_screen_surface = self.end_screen.create_screen("Game Over", size = 75)
         self.scoreboard_surface = self.scoreboard.create_screen(f"Your final score was : {str(self.score)}", size=50, color=(255,255,255))
-        self.end_screen.rect = self.screen.get_rect().center
-        self.scoreboard.rect = (600, 550)
-        self.screen.blit(self.end_screen_surface, self.end_screen.rect)
+        self.scoreboard.rect = (350, 500)
+        self.screen.blit(self.end_screen_surface, (350,300))
         self.screen.blit(self.scoreboard_surface, self.scoreboard.rect)
-
 
         #Note: We need to update the screen within this helper function so that we can exit
         pygame.display.flip()
         time.sleep(25)
         sys.exit()
+
+    def _update_screen(self):
+        """
+        Helper method which updates the screen
+        :return: None
+        """
+        # Add background color and draw ship
+        self.screen.fill(self.settings.bg_color)
+        self.ship.blitme()
+
+        self._update_bullets()
+        self._have_collided()
+        self.aliens.draw(self.screen)
+        self._update_alien_bullets()
+        self._move_fleet()
+
+        # update the score
+        self.scoreboard_surface = self.scoreboard.create_screen(str(self.score), size=50, color=(0, 0, 0))
+        self.screen.blit(self.scoreboard_surface, self.scoreboard.rect)
+
+        # Update the entire screen
+        pygame.display.flip()
 
 ### Create the main game loop ###
 

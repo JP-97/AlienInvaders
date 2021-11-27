@@ -16,9 +16,11 @@ class Settings:
         self.bullet_width = 3
         self.bullet_height = 15
         self.bullet_timer = time.time()
-        self.bullet_fired_threshold = 0.25
+        self.bullet_timer_alien = time.time()
+        self.bullet_fired_threshold = 0.5
+        self.bullet_fired_threshold_alien = 2
 
         #alien settings
         self.direction = 1
         self.alien_speed_left_to_right = 1
-        self.alien_drop_speed = 10
+        self.alien_drop_speed = 15
