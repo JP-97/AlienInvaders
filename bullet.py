@@ -46,7 +46,7 @@ class AlienBullet(Bullet):
         alien_list = self.ai_game.aliens.sprites()
         rand_index = random.randint(0, len(alien_list) - 1)
         alien_rect = alien_list[rand_index].rect
-        self.rect = pygame.Rect(alien_rect.midbottom, (self.ai_game.settings.bullet_width, self.ai_game.settings.bullet_height))
+        self.rect = pygame.Rect(alien_rect.midbottom, (self.ai_game.settings.alien_bullet_width, self.ai_game.settings.alien_bullet_height))
 
 
     def blitme_alien(self):

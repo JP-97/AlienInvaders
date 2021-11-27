@@ -205,6 +205,7 @@ class AlienInvasion:
         """
         collided_aliens_and_bullets = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
         collided_aliens_and_ship = pygame.sprite.spritecollide(self.ship,self.aliens, False)
+        collided_alien_bullets_and_ship = pygame.sprite.spritecollide(self.ship, self.alien_bullets, False)
 
         if collided_aliens_and_ship:
             self._draw_end_screen()
@@ -215,6 +216,9 @@ class AlienInvasion:
             # print(len(collided_aliens_and_bullets))
             print(self.score)
 
+        if collided_alien_bullets_and_ship:
+            self._draw_end_screen()
+
     def _draw_end_screen(self):
         """
         Logic required to apply a black background and print the scoreboard to the screen
@@ -222,8 +226,8 @@ class AlienInvasion:
         """
         self.settings.bg_color = (0, 0, 0)
         self.screen.fill(self.settings.bg_color)
-        self.end_screen_surface = self.end_screen.create_screen("Game Over", size = 75)
-        self.scoreboard_surface = self.scoreboard.create_screen(f"Your final score was : {str(self.score)}", size=50, color=(255,255,255))
+        self.end_screen_surface = self.end_screen.create_screen("GAME OVER", size = 75)
+        self.scoreboard_surface = self.scoreboard.create_screen(f"YOUR FINAL SCORE WAS : {str(self.score)}", size=50, color=(255,255,255))
         self.scoreboard.rect = (350, 500)
         self.screen.blit(self.end_screen_surface, (350,300))
         self.screen.blit(self.scoreboard_surface, self.scoreboard.rect)
