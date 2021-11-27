@@ -234,8 +234,11 @@ class AlienInvasion:
 
         #Note: We need to update the screen within this helper function so that we can exit
         pygame.display.flip()
-        time.sleep(25)
-        sys.exit()
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sys.exit()
 
     def _update_screen(self):
         """
